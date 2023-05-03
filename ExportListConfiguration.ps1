@@ -1,13 +1,13 @@
 
 Add-PSSnapin Microsoft.SharePoint.PowerShell -ErrorAction SilentlyContinue
-#Configuration Parameters
+#Configuration Parameters - Need to update this 
 $SiteURL="http://url.com/"
 $ListName= "theList"
-$XMLPath="C:\Temp\list.xml"
+$XMLPath=".\ListDetails.xml"
 
-#Get the Web and List
+#Get the Web and List                       
 $Web = Get-SPWeb $SiteURL
-$List = $Web.Lists.TryGetList ($ListName)
+$List = $Web.Lists.TryGetList($ListName)
 
 #Create an XMLTextWriter object
 $XMLWriter = New-Object System.XMl.XmlTextWriter($XMLPath,$Null)
