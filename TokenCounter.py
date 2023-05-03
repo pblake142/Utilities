@@ -3,8 +3,6 @@ import tkinter as tk
 from tkinter import simpledialog
 from tkinter import messagebox
 
-filepath = 'text.txt'
-
 def num_tokens(text:str, model: str = 'gpt-4'):
     encoding = tiktoken.encoding_for_model(model)
     return len(encoding.encode(text))
