@@ -2,6 +2,7 @@ import os
 import tiktoken
 
 directory = '' # Insert your directory here
+filetype = '.md' # Insert your filetype here
 model = 'gpt-4' # gpt-4, gpt-3.5-turbo, and ada all use cl100k_base
 
 # Build list of files in directory
@@ -9,7 +10,7 @@ def list_files(directory):
     file_list = []
     for root, dirs, files in os.walk(directory):
         for file in files:
-            if file.endswith('.md'): # This script currently only targets .md files, as that's the format I'm working with
+            if file.endswith(f'{filetype}'): 
                 file_list.append(os.path.join(root, file))
     return file_list
 
