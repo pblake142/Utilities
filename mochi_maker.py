@@ -1,40 +1,42 @@
 # A barebones utility that can generate a mochi-ready EDN file using a TKInter UI
 
 import tkinter as tk
-from tkinter import *
-from tkinter import ttk
 import json
-import openai
-import os
 import re
 import time
 import tkinter.messagebox
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
+from openai import OpenAI
+from tkinter import *
 
 MOCHI_QUESTIONS_GENERATOR_SYSTEM_PROMPT = """
 You are a question generation program. When you are provided with a user message, write a list of all questions about the information conatined in the user message. No two questions should ask about the same information from the user message. Print the questions in a numbered format.
 """
 MOCHI_ANSWER_GENERATOR_SYSTEM_PROMPT = "You are an answer generation program. When you are provided with a user message, it will contain text before a list of numbered questions. The numbered questions will begin after the '-----' string. Write answers for each of the numbered questions using the text preceding it."
 
+client = OpenAI()
+
 # Core function to interact with OpenAI API
-def openAIGPTCall(system_prompt,user_prompt,model="gpt-3.5-turbo-0615"):
-  message_history = [{
-    "role": "system",
-    "content": system_prompt
-  }, {
-    "role": "user",
-    "content": user_prompt
-  }]
+def openAIGPTCall(system_prompt,user_prompt, model="gpt-4"):
+  print("Calling OpenAI API.")  
+  
+  message_call = {
+     "messages": [{
+        "role": "system",
+        "content": system_prompt
+     },
+     {
+        "role": "user",
+        "content": user_prompt
+     }
+     ],
+     "model": model,
+  }
 
   start_time = time.time()
-  response = openai.ChatCompletion.create(model=model,
-                                          messages=message_history,
-                                          temperature=0.8)
+  response = client.chat.completions.create(**message_call)
   elapsed_time = (time.time() - start_time) * 1000
-  cost_factor = 0.06 if model == "gpt-4-0613" else 0.002
-  cost = cost_factor * (response.usage["total_tokens"] / 1000)
+  cost_factor = 0.06 if model == "gpt-4-0613" else 0.002 # Update with pricing
+  cost = cost_factor * (response.usage.total_tokens / 1000)
   message = response.choices[0].message.content.strip()
   return message, cost, elapsed_time
 
@@ -44,7 +46,7 @@ def question_generator(text):
   user_prompt = text
 
   print("Passing text to generate questions.")
-  questions,question_cost,question_time = openAIGPTCall(system_prompt,user_prompt,model="gpt-4-0613")
+  questions,question_cost,question_time = openAIGPTCall(system_prompt,user_prompt, model="gpt-4-0613")
   print("Questions generated.")
   return questions, question_cost, question_time
 
@@ -56,7 +58,7 @@ def answer_generator(text, questions):
   print(f"user_prompt: {user_prompt}")
 
   print("Passing text and questions to generate answers.")
-  answers, answer_cost, answer_time = openAIGPTCall(system_prompt,user_prompt,model='gpt-3.5-turbo-0613')
+  answers, answer_cost, answer_time = openAIGPTCall(system_prompt,user_prompt, model="gpt-4-0613")
   print("Answers generated.")
   return answers, answer_cost, answer_time
 

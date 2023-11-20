@@ -1,24 +1,17 @@
-import os
-import openai
+from openai import OpenAI
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
-file_path = ''
+embedding_call = {
+    'input': "Once upon a time",
+    'model': "text-embedding-ada-002"
+}
 
-def read_markdown(file_path):
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            text = file.read()
-        return text
-    except IOError as e:
-        print(f'Error reading {file_path}: {e}')
-        return []
+embeddings = client.embeddings.create(**embedding_call)
 
-def get_embedding_dimension(model_name, text):
-    response = openai.Embedding.create(input=text, model=model_name)
-    embedding = response['data'][0]['embedding']
-    return len(embedding)
+len_embedding = len(embeddings.data[0].embedding)
 
-# Replace 'text-embedding-ada-002' with the actual model name if different
-dimensionality = get_embedding_dimension('text-embedding-ada-002', text=read_markdown(file_path))
-print(f"The dimensionality of the model is: {dimensionality}")
+if len_embedding is not None:
+    print(f'The embedding has {len_embedding} dimensions')
+else:
+    print('you done goofed')
