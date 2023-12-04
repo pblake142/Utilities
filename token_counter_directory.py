@@ -1,8 +1,8 @@
 import os
 import tiktoken
 
-directory = 'formatted_md/spo_pages'
-file_type = '.md'
+directory = 'your/dir/path'
+file_type = '.md' # Identify the file types to count
 model = 'gpt-4' # Choices include gpt-4
 
 # Build list of files in directory
